@@ -1,0 +1,26 @@
+tsdk
+====
+tui sudoku with tcell and sug.
+
+
+Dependencies
+------------
+go.
+
+
+Installation
+------------
+run
+    git clone https://github.com/retpoison/tsdk.git
+    cd tsdk
+    go build
+    ./tsdk
+
+
+Keybindings
+-----------
+arrow keys |-movement
+  Enter    |---select
+  Q, q     |-----exit
+  Esc      |-----exit
+  Ctrl+c   |-----exit
