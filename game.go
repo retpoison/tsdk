@@ -234,13 +234,10 @@ func (g *Game) timer() {
 }
 
 func (g *Game) isPuzzleSolved() bool {
-	i, j := sug.GetFirstZero(g.cPuzzle)
-	if i != -1 || j != -1 {
-		return false
-	}
-	for i = range sug.Row {
-		for j = range sug.Col {
-			if g.sdk.Answers[0][i][j] != g.cPuzzle[i][j] {
+	for i := range sug.Row {
+		for j := range sug.Col {
+			if g.sdk.Answers[0][i][j] != g.cPuzzle[i][j] ||
+				g.cPuzzle[i][j] == 0 {
 				return false
 			}
 		}
