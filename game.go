@@ -37,6 +37,8 @@ func (g *Game) run() {
 				g.cleanCell()
 			} else if key >= tcell.KeyUp && key <= tcell.KeyLeft {
 				g.move(key, content)
+			} else if char == 'u' || char == 'U' {
+				g.undo()
 			}
 		}
 
@@ -64,7 +66,7 @@ func (g *Game) move(key tcell.Key, content rune) {
 	} else if key == tcell.KeyRight && g.sdkcol < sug.Col-1 {
 		g.sdkcol++
 	}
-	g.makeRowCol()
+	g.screenrow, g.screencol = g.makeRowCol(g.sdkrow, g.sdkcol)
 }
 
 func (g *Game) setSudoku() bool {
@@ -137,9 +139,10 @@ func (g *Game) makeTable() [][]rune {
 	return table
 }
 
-func (g *Game) makeRowCol() {
-	g.screenrow = int(g.sdkrow/3) + g.sdkrow
-	g.screencol = (int(g.sdkcol/3) + g.sdkcol) * 2
+func (g *Game) makeRowCol(sdkrow, sdkcol int) (int, int) {
+	screenrow := int(sdkrow/3) + sdkrow
+	screencol := (int(sdkcol/3) + sdkcol) * 2
+	return screenrow, screencol
 }
 
 func (g *Game) getDifficulty() int {
@@ -195,18 +198,42 @@ func (g *Game) isSdkCellEmpty() bool {
 }
 
 func (g *Game) cleanCell() {
-	if g.isSdkCellEmpty() {
-		g.s.SetContent(g.screencol, g.screenrow, '_',
-			nil, g.styles["empty"])
-		g.cPuzzle[g.sdkrow][g.sdkcol] = 0
+	if !g.isSdkCellEmpty() {
+		return
 	}
+	g.s.SetContent(g.screencol, g.screenrow, '_',
+		nil, g.styles["empty"])
+	g.cPuzzle[g.sdkrow][g.sdkcol] = 0
 }
 
 func (g *Game) insertNumber(num rune) {
-	if g.isSdkCellEmpty() {
-		g.s.SetContent(g.screencol, g.screenrow, num,
-			nil, g.styles["empty"])
-		g.cPuzzle[g.sdkrow][g.sdkcol] = int(num - '0')
+	if !g.isSdkCellEmpty() {
+		return
+	}
+	content, _, _, _ := g.s.GetContent(g.screencol, g.screenrow)
+	g.s.SetContent(g.screencol, g.screenrow, num,
+		nil, g.styles["empty"])
+	g.cPuzzle[g.sdkrow][g.sdkcol] = int(num - '0')
+	g.stack = g.stack.Push(Element{
+		Row:  g.sdkrow,
+		Col:  g.sdkcol,
+		Char: content,
+	})
+}
+
+func (g *Game) undo() {
+	var e Element
+	g.stack, e = g.stack.Pop()
+	if e.Row == -1 && e.Col == -1 {
+		return
+	}
+	scrow, sccol := g.makeRowCol(e.Row, e.Col)
+	g.s.SetContent(sccol, scrow, e.Char,
+		nil, g.styles["empty"])
+	if e.Char == '_' {
+		g.cPuzzle[e.Row][e.Col] = '0'
+	} else {
+		g.cPuzzle[e.Row][e.Col] = int(e.Char - '0')
 	}
 }
 

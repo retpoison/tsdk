@@ -19,6 +19,7 @@ type Game struct {
 	mainTable   [][]rune
 	stopTimer   chan bool
 	timeStrChan chan string
+	stack       Stack
 }
 
 func main() {
@@ -60,6 +61,7 @@ func main() {
 	if !game.setSudoku() {
 		return
 	}
+	game.stack = NewStack()
 	game.cPuzzle = sug.CopySudoku(game.sdk.Puzzle)
 	game.mainTable = game.makeTable()
 	game.drawTable()
