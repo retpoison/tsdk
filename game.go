@@ -201,6 +201,7 @@ func (g *Game) cleanCell() {
 	if !g.isSdkCellEmpty() {
 		return
 	}
+	g.pushStack()
 	g.s.SetContent(g.screencol, g.screenrow, '_',
 		nil, g.styles["empty"])
 	g.cPuzzle[g.sdkrow][g.sdkcol] = 0
@@ -210,10 +211,14 @@ func (g *Game) insertNumber(num rune) {
 	if !g.isSdkCellEmpty() {
 		return
 	}
-	content, _, _, _ := g.s.GetContent(g.screencol, g.screenrow)
+	g.pushStack()
 	g.s.SetContent(g.screencol, g.screenrow, num,
 		nil, g.styles["empty"])
 	g.cPuzzle[g.sdkrow][g.sdkcol] = int(num - '0')
+}
+
+func (g *Game) pushStack() {
+	content, _, _, _ := g.s.GetContent(g.screencol, g.screenrow)
 	g.stack = g.stack.Push(Element{
 		Row:  g.sdkrow,
 		Col:  g.sdkcol,
