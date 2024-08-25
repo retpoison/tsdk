@@ -19,8 +19,11 @@ run
 
 Keybindings
 -----------
-arrow keys |-movement
-  Enter    |---select
-  Q, q     |-----exit
-  Esc      |-----exit
-  Ctrl+c   |-----exit
+arrow keys |-----movement
+  Enter    |-------select
+  1-9      |insert number
+backspace  |delete number
+  U, u     |---------undo
+  Q, q     |---------exit
+  Esc      |---------exit
+  Ctrl+c   |---------exit
