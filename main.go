@@ -16,7 +16,7 @@ type Game struct {
 	sdkcol      int
 	screenrow   int
 	screencol   int
-	gameTable   [][]rune
+	mainTable   [][]rune
 	stopTimer   chan bool
 	timeStrChan chan string
 }
@@ -61,7 +61,7 @@ func main() {
 		return
 	}
 	game.cPuzzle = sug.CopySudoku(game.sdk.Puzzle)
-	game.makeTable()
+	game.mainTable = game.makeTable()
 	game.drawTable()
 	game.run()
 }

@@ -87,21 +87,23 @@ func (g *Game) setSudoku() bool {
 }
 
 func (g *Game) drawTable() {
-	for r := range len(g.gameTable) {
-		for c := range len(g.gameTable[r]) {
-			m := g.gameTable[r][c] - '0'
-			if m > 10 || m < 1 {
-				g.s.SetContent(c, r, g.gameTable[r][c],
+	var table = g.makeTable()
+	for r := range len(table) {
+		for c := range len(table[r]) {
+			m := table[r][c] - '0'
+			if (m > 10 || m < 1) ||
+				(table[r][c] != '_' && g.mainTable[r][c] == '_') {
+				g.s.SetContent(c, r, table[r][c],
 					nil, g.styles["empty"])
 			} else {
-				g.s.SetContent(c, r, g.gameTable[r][c],
+				g.s.SetContent(c, r, g.mainTable[r][c],
 					nil, g.styles["filled"])
 			}
 		}
 	}
 }
 
-func (g *Game) makeTable() {
+func (g *Game) makeTable() [][]rune {
 	var tableh, tablew = 11, 21
 	var table = make([][]rune, tableh)
 	for i := range tableh {
@@ -121,10 +123,10 @@ func (g *Game) makeTable() {
 				table[i][j] = tcell.RuneVLine
 				continue
 			}
-			if g.sdk.Puzzle[si][sj] == 0 {
+			if g.cPuzzle[si][sj] == 0 {
 				table[i][j] = '_'
 			} else {
-				table[i][j] = rune(g.sdk.Puzzle[si][sj]) + '0'
+				table[i][j] = rune(g.cPuzzle[si][sj]) + '0'
 			}
 			sj++
 		}
@@ -132,7 +134,7 @@ func (g *Game) makeTable() {
 			si++
 		}
 	}
-	g.gameTable = table
+	return table
 }
 
 func (g *Game) makeRowCol() {
